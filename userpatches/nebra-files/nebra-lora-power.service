@@ -1,0 +1,21 @@
+[Unit]
+Description=Nebra LoRa HAT power enable + status LED (GL5712-UX / SX1301)
+Documentation=file:/usr/local/sbin/nebra-hat
+# No After=multi-user.target here: this unit is WantedBy=multi-user.target, and
+# ordering against the target itself is a cycle — systemd then silently drops
+# the start job of anything that is After=this unit.
+After=sysinit.target
+
+[Service]
+Type=simple
+# a leftover `gpioset` from a manual bring-up would still hold the lines
+ExecStartPre=-/usr/bin/pkill -x gpioset
+ExecStart=/usr/bin/python3 /usr/local/sbin/nebra-hat
+Restart=always
+RestartSec=3
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=nebra-hat
+
+[Install]
+WantedBy=multi-user.target
